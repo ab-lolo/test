@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Induktionsgesetz & Lenz'sche Regel — 11NP Physik</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)'], ['$','$']] },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+    };
+  </script>
+  <style>
+    :root {
+      --bg:      #070b16;
+      --bg2:     #0d1426;
+      --bg3:     #101828;
+      --card:    #0c1424;
+      --border:  #1a2840;
+      --accent:  #00c8ff;
+      --accent2: #ffb300;
+      --accent3: #00e898;
+      --red:     #ff4560;
+      --text:    #b8ccE8;
+      --dim:     #5a7a9a;
+      --white:   #ffffff;
+      --g1: #3b82f6;
+      --g2: #a855f7;
+      --g3: #22c55e;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'Rajdhani',sans-serif;
+      font-size:17px;line-height:1.65;
+      background:var(--bg);color:var(--text);
+      min-height:100vh;
+    }
+    body::before{
+      content:'';position:fixed;inset:0;
+      background-image:
+        linear-gradient(rgba(0,200,255,.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(0,200,255,.025) 1px,transparent 1px);
+      background-size:48px 48px;
+      pointer-events:none;z-index:0;
+    }
+
+    /* ── HEADER ── */
+    header{
+      position:relative;z-index:10;
+      padding:2rem 2rem 1.2rem;
+      border-bottom:1px solid var(--border);
+      background:linear-gradient(180deg,rgba(0,200,255,.06) 0%,transparent 100%);
+    }
+    .header-tag{
+      font-family:'JetBrains Mono',monospace;
+      font-size:.7rem;letter-spacing:.22em;
+      color:var(--accent);text-transform:uppercase;margin-bottom:.5rem;
+    }
+    header h1{
+      font-family:'Orbitron',monospace;font-weight:900;
+      font-size:clamp(1.3rem,4vw,2.1rem);
+      color:var(--white);letter-spacing:.04em;
+    }
+    header h1 em{color:var(--accent);font-style:normal}
+    .header-sub{margin-top:.4rem;color:var(--dim);font-size:.9rem}
+
+    /* ── PHASE BAR ── */
+    .phase-bar{
+      display:flex;gap:.4rem;
+      padding:.8rem 2rem;
+      border-bottom:1px solid var(--border);
+      background:var(--bg2);
+      position:sticky;top:0;z-index:100;
+      overflow-x:auto;flex-shrink:0;
+    }
+    .phase-dot{
+      display:flex;align-items:center;gap:.5rem;
+      padding:.4rem .9rem;border-radius:3px;
+      border:1px solid var(--border);
+      cursor:pointer;transition:all .18s;
+      white-space:nowrap;
+      font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.85rem;
+      color:var(--dim);background:transparent;
+    }
+    .phase-dot.active{border-color:var(--accent);color:var(--accent);background:rgba(0,200,255,.07);box-shadow:0 0 14px rgba(0,200,255,.15)}
+    .phase-dot.done{border-color:var(--accent3);color:var(--accent3)}
+
+    /* ── MAIN ── */
+    main{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:2rem}
+
+    .phase{display:none}
+    .phase.active{display:block;animation:fadeUp .35s ease}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── TYPOGRAPHY ── */
+    .phase-title{
+      font-family:'Orbitron',monospace;font-weight:700;
+      font-size:1.45rem;color:var(--white);margin-bottom:.25rem;
+    }
+    .phase-subtitle{
+      font-family:'JetBrains Mono',monospace;
+      font-size:.75rem;letter-spacing:.06em;
+      color:var(--dim);margin-bottom:2rem;
+    }
+
+    /* ── CARDS ── */
+    .card{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:4px;padding:1.5rem;margin-bottom:1.5rem;
+      position:relative;overflow:hidden;
+    }
+    .card::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,var(--accent),transparent);
+    }
+    .card.g1::before{background:linear-gradient(90deg,var(--g1),transparent)}
+    .card.g2::before{background:linear-gradient(90deg,var(--g2),transparent)}
+    .card.g3::before{background:linear-gradient(90deg,var(--g3),transparent)}
+
+    .card h2{
+      font-family:'Orbitron',monospace;font-size:.9rem;font-weight:700;
+      color:var(--accent);margin-bottom:1rem;letter-spacing:.07em;
+    }
+    .card p{margin-bottom:.65rem}
+    .card p:last-child{margin-bottom:0}
+
+    strong.w{color:var(--white);font-weight:700}
+    .a1{color:var(--accent)}
+    .a2{color:var(--accent2)}
+    .a3{color:var(--accent3)}
+
+    /* ── FORMULA BOX ── */
+    .formula-box{
+      background:rgba(0,200,255,.05);
+      border:1px solid rgba(0,200,255,.18);
+      border-radius:4px;padding:1rem 1.5rem;margin:1rem 0;
+      text-align:center;font-size:1.05rem;overflow-x:auto;
+    }
+
+    /* ── STEPS ── */
+    .steps{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+      gap:1rem;margin:1.2rem 0;
+    }
+    .step{
+      background:var(--bg3);border:1px solid var(--border);
+      border-radius:4px;padding:1rem;text-align:center;
+    }
+    .step-num{
+      font-family:'Orbitron',monospace;font-size:1.6rem;font-weight:900;
+      color:var(--accent);display:block;margin-bottom:.4rem;
+    }
+    .step-title{font-weight:700;color:var(--white);font-size:.95rem;margin-bottom:.3rem}
+    .step-desc{font-size:.82rem;color:var(--dim)}
+
+    /* ── CALLOUTS ── */
+    .callout{
+      padding:1rem 1.4rem;border-radius:0 4px 4px 0;margin:1rem 0;
+    }
+    .callout.amber{background:rgba(255,179,0,.06);border-left:3px solid var(--accent2)}
+    .callout.green{background:rgba(0,232,152,.06);border-left:3px solid var(--accent3)}
+    .callout.blue{background:rgba(0,200,255,.06);border-left:3px solid var(--accent)}
+
+    /* ── PARAM TABLE ── */
+    .param-table{
+      width:100%;border-collapse:collapse;margin:1rem 0;
+      font-family:'JetBrains Mono',monospace;font-size:.83rem;
+    }
+    .param-table th{
+      background:var(--bg3);padding:.5rem .9rem;
+      border:1px solid var(--border);color:var(--dim);
+      font-weight:400;letter-spacing:.04em;text-align:left;
+    }
+    .param-table td{
+      padding:.5rem .9rem;border:1px solid var(--border);
+      color:var(--white);font-weight:700;
+    }
+
+    /* ── GROUP TABS ── */
+    .group-tabs{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap}
+    .group-tab{
+      padding:.45rem 1rem;border:1px solid var(--border);
+      background:transparent;border-radius:3px;cursor:pointer;
+      font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;
+      transition:all .18s;color:var(--dim);
+    }
+    .group-tab.g1.active{border-color:var(--g1);color:var(--g1);background:rgba(59,130,246,.1)}
+    .group-tab.g2.active{border-color:var(--g2);color:var(--g2);background:rgba(168,85,247,.1)}
+    .group-tab.g3.active{border-color:var(--g3);color:var(--g3);background:rgba(34,197,94,.1)}
+
+    .group-content{display:none}
+    .group-content.active{display:block;animation:fadeUp .25s ease}
+
+    /* ── CHECKLIST ── */
+    .checklist{list-style:none;display:flex;flex-direction:column;gap:.8rem}
+    .checklist li{display:flex;align-items:flex-start;gap:.9rem}
+    .check-badge{
+      font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;
+      color:var(--accent2);background:rgba(255,179,0,.1);
+      border:1px solid rgba(255,179,0,.3);border-radius:3px;
+      padding:.15rem .5rem;flex-shrink:0;margin-top:.15rem;
+    }
+
+    /* ── SOLUTION TOGGLE ── */
+    .sol-toggle{
+      background:var(--bg3);border:1px dashed var(--border);
+      border-radius:4px 4px 0 0;padding:.8rem 1.2rem;
+      cursor:pointer;display:flex;justify-content:space-between;
+      align-items:center;margin-top:1rem;
+      font-weight:700;font-size:.88rem;color:var(--dim);
+      transition:all .18s;user-select:none;
+    }
+    .sol-toggle:hover{border-color:var(--accent);color:var(--accent)}
+    .sol-body{
+      display:none;background:var(--bg3);
+      border:1px dashed var(--border);border-top:none;
+      padding:1.2rem;border-radius:0 0 4px 4px;
+    }
+    .sol-body.open{display:block;animation:fadeUp .25s ease}
+    .sol-body p{margin-bottom:.5rem}
+
+    /* ── TIMER ── */
+    .timer-wrap{
+      display:flex;align-items:center;gap:1.5rem;
+      padding:1.3rem 1.5rem;background:var(--bg3);
+      border:1px solid var(--border);border-radius:4px;
+      margin:1.5rem 0;flex-wrap:wrap;
+    }
+    .timer-display{
+      font-family:'Orbitron',monospace;font-size:2.8rem;font-weight:900;
+      color:var(--accent);letter-spacing:.1em;
+      text-shadow:0 0 24px rgba(0,200,255,.35);min-width:160px;
+    }
+    .timer-display.warn{color:var(--accent2);text-shadow:0 0 24px rgba(255,179,0,.35)}
+    .timer-display.danger{color:var(--red);text-shadow:0 0 24px rgba(255,69,96,.35);animation:blink 1s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.55}}
+
+    .timer-controls{display:flex;flex-direction:column;gap:.6rem}
+    .preset-row{display:flex;gap:.4rem;flex-wrap:wrap}
+    .btn-row{display:flex;gap:.5rem;flex-wrap:wrap}
+
+    /* ── BUTTONS ── */
+    .btn{
+      padding:.45rem 1.1rem;border:1px solid var(--accent);
+      border-radius:3px;background:transparent;color:var(--accent);
+      font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;
+      cursor:pointer;transition:all .18s;letter-spacing:.04em;
+    }
+    .btn:hover{background:rgba(0,200,255,.1);box-shadow:0 0 12px rgba(0,200,255,.2)}
+    .btn.muted{border-color:var(--border);color:var(--dim)}
+    .btn.muted:hover{border-color:var(--dim);color:var(--text)}
+
+    .preset-btn{
+      padding:.28rem .65rem;border:1px solid var(--border);
+      border-radius:3px;background:transparent;
+      font-family:'JetBrains Mono',monospace;font-size:.78rem;
+      color:var(--dim);cursor:pointer;transition:all .18s;
+    }
+    .preset-btn:hover,.preset-btn.sel{border-color:var(--accent2);color:var(--accent2)}
+
+    /* ── SIMULATION ── */
+    .sim-wrap{
+      background:var(--bg3);border:1px solid var(--border);
+      border-radius:4px;padding:1.5rem;margin:1.5rem 0;
+    }
+    .sim-wrap h2{
+      font-family:'Orbitron',monospace;font-size:.9rem;font-weight:700;
+      color:var(--accent);margin-bottom:1rem;letter-spacing:.07em;
+    }
+    canvas{
+      width:100%;display:block;border-radius:3px;background:#040810;
+    }
+    .sim-sliders{
+      display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap;
+    }
+    .slider-group{
+      display:flex;flex-direction:column;gap:.25rem;flex:1;min-width:140px;
+    }
+    .slider-label{
+      font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--dim);
+    }
+    .slider-label span{color:var(--accent);font-weight:700}
+    input[type=range]{width:100%;accent-color:var(--accent)}
+
+    .sim-group-row{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap}
+
+    /* ── KEY INSIGHT ── */
+    .insight{
+      background:rgba(0,200,255,.05);
+      border:1px solid rgba(0,200,255,.2);
+      border-radius:4px;padding:1.2rem 1.5rem;margin:1rem 0;
+    }
+    .insight-head{
+      font-family:'Orbitron',monospace;font-size:.75rem;
+      color:var(--accent);margin-bottom:.5rem;letter-spacing:.12em;
+    }
+
+    /* ── EXIT TICKET ── */
+    .exit-grid{display:flex;flex-direction:column;gap:1rem;margin-top:1rem}
+    .exit-q{
+      background:var(--bg3);border:1px solid var(--border);
+      border-radius:4px;padding:1.2rem;
+      display:flex;gap:1rem;align-items:flex-start;
+    }
+    .exit-num{
+      font-family:'Orbitron',monospace;font-weight:900;font-size:1.6rem;
+      color:var(--accent);flex-shrink:0;line-height:1;
+    }
+
+    /* ── NAV ── */
+    .nav-row{
+      display:flex;justify-content:space-between;align-items:center;
+      margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);
+    }
+
+    /* ── LENZ CANVAS ── */
+    #lenzCanvas{background:#040810;border-radius:3px;cursor:pointer}
+
+    ::-webkit-scrollbar{width:5px;height:5px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+    @media(max-width:600px){
+      main{padding:1rem}
+      .timer-display{font-size:2rem}
+      header h1{font-size:1.2rem}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">⚡ 11NP Physik · Elektromagnetismus</div>
+  <h1>⚡ <em>Induktionsgesetz</em> &amp; Lenz'sche Regel</h1>
+  <div class="header-sub">Selbstinduktion einer Spule · Vertiefung &amp; Klausurvorbereitung | 11NP Physik</div>
+</header>
+
+<nav class="phase-bar" id="phaseBar">
+  <button class="phase-dot active" onclick="goTo(0)">① Einstieg</button>
+  <button class="phase-dot"        onclick="goTo(1)">② Ingenieursaufgabe</button>
+  <button class="phase-dot"        onclick="goTo(2)">③ Ergebnisse &amp; Simulation</button>
+  <button class="phase-dot"        onclick="goTo(3)">④ Klausurvorbereitung</button>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════════════ PHASE 1 ══ -->
+<section class="phase active" id="p0">
+  <div class="phase-title">⚡ Einstieg</div>
+  <div class="phase-subtitle">// WARM-UP · GRUNDLAGEN AKTIVIEREN</div>
+
+  <div class="card">
+    <h2>🧲 DAS KLASSISCHE EXPERIMENT</h2>
+    <p>Ein Stabmagnet wird in eine Spule geschoben. Am Galvanometer zeigt sich ein Ausschlag — obwohl die Spule <strong class="w">nirgends an einer Spannungsquelle hängt</strong>.</p>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <div class="step-title">Nähern</div>
+        <div class="step-desc">Zeiger schlägt aus → Spannung entsteht</div>
+      </div>
+      <div class="step">
+        <span class="step-num">2</span>
+        <div class="step-title">Halten</div>
+        <div class="step-desc">Zeiger auf null → kein Strom</div>
+      </div>
+      <div class="step">
+        <span class="step-num">3</span>
+        <div class="step-title">Entfernen</div>
+        <div class="step-desc">Zeiger schlägt <em>entgegengesetzt</em> aus</div>
+      </div>
+    </div>
+    <div class="formula-box">
+      \[ U_\text{ind} = -N \cdot \frac{\Delta \Phi}{\Delta t} = -N \cdot A \cdot \frac{\Delta B}{\Delta t} \]
+    </div>
+    <p class="a3" style="font-weight:700">→ Entscheidend ist die <em>Änderung</em> des Flusses, nicht sein absoluter Wert!</p>
+  </div>
+
+  <div class="card">
+    <h2>🔄 LENZ'SCHE REGEL — INTERAKTIV</h2>
+    <p>Der Induktionsstrom wirkt stets seiner Ursache <strong class="w">entgegen</strong>.</p>
+    <div class="callout amber" style="margin-bottom:1rem">
+      <strong class="a2">Merkhilfe:</strong> „Induktion ist faul — sie wehrt sich gegen jede Änderung."<br>
+      Wächst \(B\) → Induktionsstrom baut <em>Gegenfeld</em> auf.<br>
+      Sinkt \(B\)&nbsp;&nbsp; → Induktionsstrom <em>hält das Feld aufrecht</em>.
+    </div>
+    <canvas id="lenzCanvas" height="190"></canvas>
+    <div style="display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap">
+      <button class="btn" onclick="lenzPlay('approach')">▶ Nähern</button>
+      <button class="btn muted" onclick="lenzPlay('retreat')">▶ Entfernen</button>
+      <button class="btn muted" onclick="lenzStop()">↺ Reset</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>⚡ SELBSTINDUKTION</h2>
+    <p>Ändert sich der Strom <em>durch die Spule selbst</em>, erzeugt sie eine Gegenspannung (Lenz!):</p>
+    <div class="formula-box">
+      \[ U_L = -L \cdot \frac{\Delta I}{\Delta t} \]
+    </div>
+    <p>Die <strong class="w">Induktivität</strong> \(L\) (Einheit: Henry, H) gibt an, wie stark eine Spule Stromänderungen bremst.</p>
+    <div class="callout green">
+      <strong class="a3">RL-Kreis — Zeitkonstante \(\tau\):</strong><br>
+      \(\tau = L/R\) — nach einer Zeitkonstante ist der Strom auf <strong>63 %</strong> seines Endwerts gestiegen.
+      \[ I(t) = \frac{U_0}{R}\!\left(1 - e^{-t/\tau}\right) \qquad U_L(t) = U_0 \cdot e^{-t/\tau} \]
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💭 DENKANSTOSS</h2>
+    <p>In einem Aufzug-Sicherheitssystem wird beim Stromausfall ein RL-Kreis aktiviert, der die Motorbremse kontrolliert entlädt — zu schnell würde die Bremse blockieren, zu langsam wäre gefährlich.</p>
+    <div class="callout blue">
+      <strong class="a1">Warum?</strong> Die Spule speichert Energie: \(W_L = \tfrac{1}{2}LI^2\).<br>
+      Diese Energie kann nicht „augenblicklich" verschwinden — die Lenz'sche Regel erzwingt eine <em>kontrollierte</em> Abgabe.
+    </div>
+    <p>→ Genau das analysieren Sie jetzt als Ingenieur/in!</p>
+  </div>
+
+  <div class="nav-row">
+    <span></span>
+    <button class="btn" onclick="goTo(1)">Weiter → Ingenieursaufgabe ⚙️</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ PHASE 2 ══ -->
+<section class="phase" id="p1">
+  <div class="phase-title">⚙️ Ingenieursaufgabe</div>
+  <div class="phase-subtitle">// GRUPPENARBEIT · RL-BREMSKREIS ANALYSIEREN</div>
+
+  <div class="card">
+    <h2>📋 IHR AUFTRAG</h2>
+    <p>In einer Fertigungsanlage werden <strong class="w">RL-Bremskreise</strong> eingesetzt, um rotierende Maschinenteile bei Not-Aus kontrolliert zu stoppen. Zum Zeitpunkt \(t = 0\) wird die Spannung \(U_0\) eingeschaltet.</p>
+    <div class="callout green">
+      <strong class="a3">Aufgabe:</strong> Analysieren Sie das Einschwingverhalten des Bremskreises Ihrer Gruppe. Erstellen Sie ein technisches Gutachten mit allen Berechnungen und einer physikalischen Begründung.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📐 SCHALTUNG UND FORMELN</h2>
+    <p>RL-Reihenschaltung: Ohmscher Widerstand \(R\), Induktivität \(L\), Versorgungsspannung \(U_0\).</p>
+    <div class="formula-box">
+      \[
+        \tau = \frac{L}{R} \qquad
+        I(t) = \frac{U_0}{R}\!\left(1 - e^{-t/\tau}\right) \qquad
+        U_L(t) = U_0\,e^{-t/\tau}
+      \]
+      \[
+        W_L = \tfrac{1}{2}\,L\,I_\text{max}^2 \qquad
+        U_\text{ind} = N \cdot A \cdot \frac{\Delta B}{\Delta t}
+      \]
+    </div>
+  </div>
+
+  <!-- GROUP TABS -->
+  <div class="group-tabs">
+    <button class="group-tab g1 active" onclick="switchGroup('grp', 0)">🔵 Gruppe 1</button>
+    <button class="group-tab g2"        onclick="switchGroup('grp', 1)">🟣 Gruppe 2</button>
+    <button class="group-tab g3"        onclick="switchGroup('grp', 2)">🟢 Gruppe 3</button>
+  </div>
+
+  <div class="group-content active" id="grp-0">
+    <div class="card g1">
+      <h2>🔵 GRUPPE 1 — BREMSSPULE ALPHA</h2>
+      <table class="param-table">
+        <tr><th>Größe</th><th>Wert</th><th>Bedeutung</th></tr>
+        <tr><td>\(U_0\)</td><td>24 V</td><td>Versorgungsspannung</td></tr>
+        <tr><td>\(R\)</td><td>12 Ω</td><td>Ohmscher Widerstand</td></tr>
+        <tr><td>\(L\)</td><td>0,60 H</td><td>Induktivität</td></tr>
+        <tr><td>\(N\)</td><td>500</td><td>Windungszahl</td></tr>
+        <tr><td>\(A\)</td><td>20 cm²</td><td>Spulenquerschnitt</td></tr>
+        <tr><td>\(\Delta B/\Delta t\)</td><td>5,0 T/s</td><td>Änderungsrate des B-Feldes</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="group-content" id="grp-1">
+    <div class="card g2">
+      <h2>🟣 GRUPPE 2 — BREMSSPULE BETA</h2>
+      <table class="param-table">
+        <tr><th>Größe</th><th>Wert</th><th>Bedeutung</th></tr>
+        <tr><td>\(U_0\)</td><td>36 V</td><td>Versorgungsspannung</td></tr>
+        <tr><td>\(R\)</td><td>18 Ω</td><td>Ohmscher Widerstand</td></tr>
+        <tr><td>\(L\)</td><td>0,90 H</td><td>Induktivität</td></tr>
+        <tr><td>\(N\)</td><td>800</td><td>Windungszahl</td></tr>
+        <tr><td>\(A\)</td><td>15 cm²</td><td>Spulenquerschnitt</td></tr>
+        <tr><td>\(\Delta B/\Delta t\)</td><td>8,0 T/s</td><td>Änderungsrate des B-Feldes</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="group-content" id="grp-2">
+    <div class="card g3">
+      <h2>🟢 GRUPPE 3 — BREMSSPULE GAMMA</h2>
+      <table class="param-table">
+        <tr><th>Größe</th><th>Wert</th><th>Bedeutung</th></tr>
+        <tr><td>\(U_0\)</td><td>12 V</td><td>Versorgungsspannung</td></tr>
+        <tr><td>\(R\)</td><td>6 Ω</td><td>Ohmscher Widerstand</td></tr>
+        <tr><td>\(L\)</td><td>0,30 H</td><td>Induktivität</td></tr>
+        <tr><td>\(N\)</td><td>300</td><td>Windungszahl</td></tr>
+        <tr><td>\(A\)</td><td>25 cm²</td><td>Spulenquerschnitt</td></tr>
+        <tr><td>\(\Delta B/\Delta t\)</td><td>4,0 T/s</td><td>Änderungsrate des B-Feldes</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- LEITFRAGEN -->
+  <div class="card">
+    <h2>📝 LEITFRAGEN (GUTACHTEN)</h2>
+    <ul class="checklist">
+      <li>
+        <span class="check-badge">1</span>
+        <span>
+          <strong>Berechnen Sie</strong> den stationären Endstrom \(I_\text{max}\) und die Zeitkonstante \(\tau\).<br>
+          <em style="color:var(--dim)">Tipp: \(I_\text{max} = U_0/R\), \(\;\tau = L/R\)</em>
+        </span>
+      </li>
+      <li>
+        <span class="check-badge">2</span>
+        <span>
+          <strong>Geben Sie</strong> den Strom zum Zeitpunkt \(t_1 = \tau\) und \(t_2 = 3\tau\) an.<br>
+          <em style="color:var(--dim)">Tipp: \(I(\tau) = I_\text{max}(1-1/e) \approx 0{,}632\,I_\text{max}\)</em>
+        </span>
+      </li>
+      <li>
+        <span class="check-badge">3</span>
+        <span>
+          <strong>Berechnen Sie</strong> die in der Spule gespeicherte Energie \(W_L\) im stationären Zustand.<br>
+          <em style="color:var(--dim)">Tipp: \(W_L = \tfrac{1}{2} L I_\text{max}^2\)</em>
+        </span>
+      </li>
+      <li>
+        <span class="check-badge">4</span>
+        <span>
+          <strong>Berechnen Sie</strong> die induzierte Spannung \(U_\text{ind}\) bei der angegebenen Feldänderung.<br>
+          <em style="color:var(--dim)">Tipp: \(U_\text{ind} = N \cdot A \cdot \Delta B/\Delta t\)</em>
+        </span>
+      </li>
+      <li>
+        <span class="check-badge">5</span>
+        <span>
+          <strong>Erklären Sie</strong> mithilfe der Lenz'schen Regel: Warum verzögert die Spule den Stromanstieg, und warum ist das für die Bremse technisch sinnvoll?
+        </span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- TIMER -->
+  <div class="timer-wrap">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--dim);margin-bottom:.4rem;letter-spacing:.12em">⏱ ARBEITSZEIT</div>
+      <div class="timer-display" id="timerDisplay">35:00</div>
+    </div>
+    <div class="timer-controls">
+      <div class="preset-row">
+        <button class="preset-btn sel" onclick="setTimer(35,this)">35 min</button>
+        <button class="preset-btn"    onclick="setTimer(40,this)">40 min</button>
+        <button class="preset-btn"    onclick="setTimer(45,this)">45 min</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="tBtn" onclick="toggleTimer()">▶ Start</button>
+        <button class="btn muted" onclick="resetTimer()">↺ Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn muted" onclick="goTo(0)">← Zurück</button>
+    <button class="btn" onclick="goTo(2)">Weiter → Ergebnisse 📊</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ PHASE 3 ══ -->
+<section class="phase" id="p2">
+  <div class="phase-title">📊 Ergebnisse &amp; Simulation</div>
+  <div class="phase-subtitle">// PRÄSENTATION · VERGLEICH · VISUALISIERUNG</div>
+
+  <div class="card">
+    <h2>👨‍🏫 ERST PRÄSENTIEREN, DANN VERGLEICHEN!</h2>
+    <p>Jede Gruppe stellt in <strong class="w">2 Minuten</strong> vor:<br>
+    \(\tau\), \(I_\text{max}\), \(W_L\), \(U_\text{ind}\), \(U_L(0)\), \(U_L(\tau)\) — und die Erklärung der Lenz'schen Regel.</p>
+  </div>
+
+  <div class="group-tabs">
+    <button class="group-tab g1 active" onclick="switchGroup('res', 0)">🔵 Gruppe 1</button>
+    <button class="group-tab g2"        onclick="switchGroup('res', 1)">🟣 Gruppe 2</button>
+    <button class="group-tab g3"        onclick="switchGroup('res', 2)">🟢 Gruppe 3</button>
+  </div>
+
+  <!-- Result 1 -->
+  <div class="group-content active" id="res-0">
+    <div class="sol-toggle" onclick="toggleSol(this)">
+      🔵 Gruppe 1 — Lösung anzeigen <span>▼</span>
+    </div>
+    <div class="sol-body">
+      <p>\(\tau = L/R = 0{,}60/12 = \mathbf{0{,}050\;\text{s}}\)</p>
+      <p>\(I_\text{max} = U_0/R = 24/12 = \mathbf{2{,}0\;\text{A}}\)</p>
+      <p>\(I(\tau) \approx 0{,}632 \times 2{,}0 \approx \mathbf{1{,}26\;\text{A}}\) &nbsp;|&nbsp; \(I(3\tau) \approx 0{,}950 \times 2{,}0 \approx \mathbf{1{,}90\;\text{A}}\)</p>
+      <p>\(W_L = \tfrac{1}{2} \times 0{,}60 \times 4{,}0 = \mathbf{1{,}20\;\text{J}}\)</p>
+      <p>\(U_\text{ind} = 500 \times 20{\times}10^{-4} \times 5{,}0 = \mathbf{5{,}0\;\text{V}}\)</p>
+      <p>\(U_L(0) = 24\;\text{V}\) &nbsp;|&nbsp; \(U_L(\tau) = 24/e \approx \mathbf{8{,}83\;\text{V}}\)</p>
+    </div>
+  </div>
+
+  <!-- Result 2 -->
+  <div class="group-content" id="res-1">
+    <div class="sol-toggle" onclick="toggleSol(this)">
+      🟣 Gruppe 2 — Lösung anzeigen <span>▼</span>
+    </div>
+    <div class="sol-body">
+      <p>\(\tau = L/R = 0{,}90/18 = \mathbf{0{,}050\;\text{s}}\)</p>
+      <p>\(I_\text{max} = U_0/R = 36/18 = \mathbf{2{,}0\;\text{A}}\)</p>
+      <p>\(I(\tau) \approx \mathbf{1{,}26\;\text{A}}\) &nbsp;|&nbsp; \(I(3\tau) \approx \mathbf{1{,}90\;\text{A}}\)</p>
+      <p>\(W_L = \tfrac{1}{2} \times 0{,}90 \times 4{,}0 = \mathbf{1{,}80\;\text{J}}\)</p>
+      <p>\(U_\text{ind} = 800 \times 15{\times}10^{-4} \times 8{,}0 = \mathbf{9{,}6\;\text{V}}\)</p>
+      <p>\(U_L(0) = 36\;\text{V}\) &nbsp;|&nbsp; \(U_L(\tau) = 36/e \approx \mathbf{13{,}25\;\text{V}}\)</p>
+    </div>
+  </div>
+
+  <!-- Result 3 -->
+  <div class="group-content" id="res-2">
+    <div class="sol-toggle" onclick="toggleSol(this)">
+      🟢 Gruppe 3 — Lösung anzeigen <span>▼</span>
+    </div>
+    <div class="sol-body">
+      <p>\(\tau = L/R = 0{,}30/6 = \mathbf{0{,}050\;\text{s}}\)</p>
+      <p>\(I_\text{max} = U_0/R = 12/6 = \mathbf{2{,}0\;\text{A}}\)</p>
+      <p>\(I(\tau) \approx \mathbf{1{,}26\;\text{A}}\) &nbsp;|&nbsp; \(I(3\tau) \approx \mathbf{1{,}90\;\text{A}}\)</p>
+      <p>\(W_L = \tfrac{1}{2} \times 0{,}30 \times 4{,}0 = \mathbf{0{,}60\;\text{J}}\)</p>
+      <p>\(U_\text{ind} = 300 \times 25{\times}10^{-4} \times 4{,}0 = \mathbf{3{,}0\;\text{V}}\)</p>
+      <p>\(U_L(0) = 12\;\text{V}\) &nbsp;|&nbsp; \(U_L(\tau) = 12/e \approx \mathbf{4{,}41\;\text{V}}\)</p>
+    </div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-head">// KERNERKENNTNIS</div>
+    <p>Alle drei Gruppen haben <strong class="w">\(\tau = 0{,}050\;\text{s}\)</strong> und <strong class="w">\(I_\text{max} = 2{,}0\;\text{A}\)</strong> — weil \(L/R\) und \(U_0/R\) identisch sind!<br><br>
+    <strong class="a2">Aber:</strong> Die gespeicherte Energie \(W_L\) unterscheidet sich, da \(L\) verschieden ist.<br>
+    Größere Induktivität → mehr Energie → stärkere Bremswirkung beim Abschalten (z.B. Lichtbogen-Gefahr!)</p>
+  </div>
+
+  <!-- SIMULATION -->
+  <div class="sim-wrap">
+    <h2>🔬 INTERAKTIVE SIMULATION — RL-KREIS</h2>
+    <div class="sim-group-row">
+      <button class="btn" style="border-color:var(--g1);color:var(--g1)" onclick="simLoadGroup(0)">🔵 G1</button>
+      <button class="btn" style="border-color:var(--g2);color:var(--g2)" onclick="simLoadGroup(1)">🟣 G2</button>
+      <button class="btn" style="border-color:var(--g3);color:var(--g3)" onclick="simLoadGroup(2)">🟢 G3</button>
+      <button class="btn muted" onclick="simReset()">↺ Reset</button>
+    </div>
+    <canvas id="simCanvas" height="230"></canvas>
+    <div class="sim-sliders">
+      <div class="slider-group">
+        <div class="slider-label">L = <span id="lVal">0.6</span> H</div>
+        <input type="range" id="lSlider" min="0.1" max="2.0" step="0.05" value="0.6" oninput="simUpdate()">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">R = <span id="rVal">12</span> Ω</div>
+        <input type="range" id="rSlider" min="2" max="50" step="1" value="12" oninput="simUpdate()">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">U₀ = <span id="uVal">24</span> V</div>
+        <input type="range" id="uSlider" min="5" max="50" step="1" value="24" oninput="simUpdate()">
+      </div>
+    </div>
+    <div style="display:flex;gap:.5rem;margin-top:1rem">
+      <button class="btn" id="simBtn" onclick="simToggle()">▶ Simulation starten</button>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn muted" onclick="goTo(1)">← Zurück</button>
+    <button class="btn" onclick="goTo(3)">Weiter → Klausurvorbereitung 📋</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ PHASE 4 ══ -->
+<section class="phase" id="p3">
+  <div class="phase-title">📋 Klausurvorbereitung</div>
+  <div class="phase-subtitle">// EXIT-TICKET · KOMPETENZEN · ZUSAMMENFASSUNG</div>
+
+  <div class="card">
+    <h2>✅ WAS SIE HEUTE GELERNT HABEN</h2>
+    <p>Sie haben Induktionsgesetz, Selbstinduktion und Lenz'sche Regel auf eine reale Ingenieursaufgabe angewandt:</p>
+    <div class="callout green" style="margin-top:1rem">
+      → Ändert sich \(\Phi\), entsteht \(U_\text{ind} = -N \cdot \Delta\Phi/\Delta t\)<br>
+      → Der Induktionsstrom <strong>wirkt seiner Ursache entgegen</strong> (Lenz!)<br>
+      → Im RL-Kreis gilt \(\tau = L/R\) — die Spule „verzögert" den Stromanstieg<br>
+      → Gespeicherte Energie: \(W_L = \tfrac{1}{2}LI^2\) — muss kontrolliert abgebaut werden
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📋 KOMPETENZ-CHECK</h2>
+    <ul class="checklist">
+      <li>
+        <span class="check-badge">I</span>
+        <span><strong>Induktionsgesetz:</strong> \(U_\text{ind}\) berechnen bei gegebenen Werten für \(N\), \(A\), \(\Delta B/\Delta t\)</span>
+      </li>
+      <li>
+        <span class="check-badge">L</span>
+        <span><strong>Lenz'sche Regel:</strong> Richtung des Induktionsstroms bestimmen und physikalisch begründen</span>
+      </li>
+      <li>
+        <span class="check-badge">S</span>
+        <span><strong>Selbstinduktion:</strong> \(U_L = -L\,\Delta I/\Delta t\) anwenden und technisch interpretieren</span>
+      </li>
+      <li>
+        <span class="check-badge">τ</span>
+        <span><strong>Zeitkonstante:</strong> \(\tau = L/R\) berechnen, \(I(t)\) zu beliebigen Zeitpunkten angeben</span>
+      </li>
+      <li>
+        <span class="check-badge">W</span>
+        <span><strong>Energie:</strong> \(W_L = \tfrac{1}{2}LI_\text{max}^2\) berechnen und mit anderen Energieformen vergleichen</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🎫 EXIT-TICKET</h2>
+    <p>Beantworten Sie <strong class="w">eine</strong> der folgenden Fragen auf einem Zettel (Name drauf!) und geben Sie ihn beim Rausgehen ab:</p>
+    <div class="exit-grid">
+      <div class="exit-q">
+        <div class="exit-num">1</div>
+        <div>Eine Spule (\(L = 0{,}4\;\text{H}\), \(R = 8\;\Omega\)) wird an \(U_0 = 20\;\text{V}\) angeschlossen. Berechnen Sie \(\tau\), \(I_\text{max}\), \(W_L\) und den Strom zum Zeitpunkt \(t = \tau\).</div>
+      </div>
+      <div class="exit-q">
+        <div class="exit-num">2</div>
+        <div>Erklären Sie in zwei Sätzen, warum eine Spule den Stromanstieg verzögert. Verwenden Sie die Lenz'sche Regel und den Begriff der Selbstinduktion.</div>
+      </div>
+      <div class="exit-q">
+        <div class="exit-num">3</div>
+        <div>Ein Magnet fällt durch ein Kupferrohr und wird stark abgebremst, ohne die Wände zu berühren. Erklären Sie den Effekt vollständig mit Induktionsgesetz und Lenz'scher Regel.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn muted" onclick="goTo(2)">← Zurück</button>
+    <span></span>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ─────────────────────────── NAVIGATION ─────────────────────────── */
+function goTo(n) {
+  document.querySelectorAll('.phase').forEach((p, i) => p.classList.toggle('active', i === n));
+  document.querySelectorAll('.phase-dot').forEach((d, i) => {
+    d.classList.remove('active','done');
+    if (i === n) d.classList.add('active');
+    if (i < n)  d.classList.add('done');
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (n === 2) { setTimeout(initSim, 100); }
+}
+
+/* ─────────────────────────── GROUPS ─────────────────────────── */
+function switchGroup(prefix, n) {
+  const section = prefix === 'grp' ? '#p1' : '#p2';
+  document.querySelectorAll(`${section} .group-content`).forEach((g, i) => g.classList.toggle('active', i === n));
+  document.querySelectorAll(`${section} .group-tab`).forEach((t, i) => t.classList.toggle('active', i === n));
+  if (window.MathJax) MathJax.typesetPromise();
+}
+
+/* ─────────────────────────── SOLUTION TOGGLE ─────────────────────────── */
+function toggleSol(btn) {
+  const body = btn.nextElementSibling;
+  body.classList.toggle('open');
+  btn.querySelector('span').textContent = body.classList.contains('open') ? '▲' : '▼';
+  if (window.MathJax) MathJax.typesetPromise();
+}
+
+/* ─────────────────────────── TIMER ─────────────────────────── */
+let timerSec = 35 * 60, timerOn = false, timerIv = null;
+
+function setTimer(m, el) {
+  timerSec = m * 60;
+  if (timerOn) { clearInterval(timerIv); timerOn = false; document.getElementById('tBtn').textContent = '▶ Start'; }
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('sel'));
+  if (el) el.classList.add('sel');
+  renderTimer();
+}
+
+function toggleTimer() {
+  if (timerOn) {
+    clearInterval(timerIv); timerOn = false;
+    document.getElementById('tBtn').textContent = '▶ Start';
+  } else {
+    timerOn = true;
+    document.getElementById('tBtn').textContent = '⏸ Pause';
+    timerIv = setInterval(() => { timerSec--; renderTimer(); if (timerSec <= 0) { clearInterval(timerIv); timerOn = false; document.getElementById('tBtn').textContent = '▶ Start'; }}, 1000);
+  }
+}
+
+function resetTimer() {
+  clearInterval(timerIv); timerOn = false; timerSec = 35 * 60;
+  document.getElementById('tBtn').textContent = '▶ Start';
+  renderTimer();
+}
+
+function renderTimer() {
+  const abs = Math.abs(timerSec);
+  const m = String(Math.floor(abs/60)).padStart(2,'0');
+  const s = String(abs%60).padStart(2,'0');
+  const d = document.getElementById('timerDisplay');
+  d.textContent = (timerSec < 0 ? '-' : '') + m + ':' + s;
+  d.className = 'timer-display';
+  if (timerSec < 300 && timerSec > 0) d.classList.add('warn');
+  if (timerSec <= 0) d.classList.add('danger');
+}
+
+/* ─────────────────────────── LENZ ANIMATION ─────────────────────────── */
+const lc = document.getElementById('lenzCanvas');
+const lx = lc.getContext('2d');
+let lDir = null, lT = 0, lAF = null;
+
+function sizeLenz() {
+  lc.width = lc.offsetWidth || 600;
+  lc.height = 190;
+  drawLenz();
+}
+
+function lenzPlay(dir) { lDir = dir; lT = 0; cancelAnimationFrame(lAF); stepLenz(); }
+function lenzStop() { lDir = null; lT = 0; cancelAnimationFrame(lAF); drawLenz(); }
+
+function stepLenz() {
+  lT = Math.min(lT + 0.018, 1.4);
+  drawLenz();
+  if (lT < 1.4) lAF = requestAnimationFrame(stepLenz);
+}
+
+function drawLenz() {
+  const W = lc.width, H = lc.height;
+  lx.clearRect(0, 0, W, H);
+  lx.fillStyle = '#040810'; lx.fillRect(0, 0, W, H);
+
+  const cx = W * 0.68, cy = H * 0.5, cW = 70, cH = 44;
+
+  // Spule — Windungen
+  lx.strokeStyle = '#00c8ff'; lx.lineWidth = 2;
+  for (let i = 0; i <= 4; i++) {
+    const ex = cx - cW/2 + i * cW/4;
+    lx.beginPath(); lx.ellipse(ex, cy, 7, cH/2, 0, 0, Math.PI*2); lx.stroke();
+  }
+  // Kern
+  lx.fillStyle = '#162035';
+  lx.fillRect(cx - cW/2 - 4, cy - 5, cW+8, 10);
+
+  // Galvanometer
+  const gx = cx, gy = cy + cH/2 + 30, gr = 18;
+  lx.beginPath(); lx.arc(gx, gy, gr, 0, Math.PI*2);
+  lx.strokeStyle = '#1e2d50'; lx.lineWidth = 1.5; lx.stroke();
+  lx.fillStyle = '#0c1424'; lx.fill();
+  lx.fillStyle = '#5a7a9a'; lx.font = '10px JetBrains Mono,monospace'; lx.textAlign = 'center';
+  lx.fillText('G', gx, gy + 4);
+
+  // Galvanometer needle
+  if (lDir && lT > 0.3) {
+    const deflect = Math.min((lT - 0.3) * 2.5, 1);
+    const angle = lDir === 'approach' ? -deflect * 0.7 : deflect * 0.7;
+    lx.save(); lx.translate(gx, gy);
+    lx.rotate(angle);
+    lx.strokeStyle = '#ff4560'; lx.lineWidth = 1.5;
+    lx.beginPath(); lx.moveTo(0, 0); lx.lineTo(0, -gr + 4); lx.stroke();
+    lx.restore();
+  }
+
+  // Magnet position
+  let mx;
+  const startX = W * 0.1, endX = cx - cW/2 - 20;
+  if (lDir === 'approach') mx = startX + lT/1.4 * (endX - startX);
+  else if (lDir === 'retreat') mx = endX - lT/1.4 * (endX - startX) * 0.8;
+  else mx = startX;
+
+  // N pole
+  lx.fillStyle = '#c0233a';
+  lx.fillRect(mx, cy - 17, 30, 34);
+  lx.fillStyle = '#fff'; lx.font = 'bold 13px Orbitron,monospace'; lx.textAlign = 'center';
+  lx.fillText('N', mx + 15, cy + 5);
+  // S pole
+  lx.fillStyle = '#1d3a8a';
+  lx.fillRect(mx - 28, cy - 17, 28, 34);
+  lx.fillStyle = '#fff';
+  lx.fillText('S', mx - 14, cy + 5);
+
+  // Field lines
+  if (lDir && lT > 0) {
+    const alpha = Math.min(lT * 2, 0.55);
+    lx.globalAlpha = alpha;
+    lx.strokeStyle = '#ff6080'; lx.lineWidth = 1.2; lx.setLineDash([5, 5]);
+    for (let dy = -12; dy <= 12; dy += 12) {
+      lx.beginPath(); lx.moveTo(mx + 30, cy + dy); lx.lineTo(cx - cW/2 - 2, cy + dy); lx.stroke();
+    }
+    lx.setLineDash([]); lx.globalAlpha = 1;
+
+    // Induced current arrow + label
+    if (lT > 0.4) {
+      const fa = Math.min((lT - 0.4) * 3, 1);
+      lx.globalAlpha = fa;
+      const col = lDir === 'approach' ? '#00e898' : '#ffb300';
+      lx.strokeStyle = col; lx.fillStyle = col; lx.lineWidth = 2;
+      const arcDir = lDir === 'approach';
+      lx.beginPath();
+      lx.arc(cx, cy - cH/2 - 14, 11, 0.4, Math.PI*2 - 0.4, !arcDir);
+      lx.stroke();
+      // Arrowhead
+      const aAngle = arcDir ? Math.PI*2 - 0.4 : 0.4;
+      const ax = cx + 11 * Math.cos(aAngle), ay = cy - cH/2 - 14 + 11 * Math.sin(aAngle);
+      lx.beginPath(); lx.arc(ax, ay, 3, 0, Math.PI*2); lx.fill();
+
+      lx.font = '10px Rajdhani,sans-serif'; lx.textAlign = 'center';
+      const label = lDir === 'approach' ? 'I ⟳ (gegen ↑B)' : 'I ⟲ (hält ↓B)';
+      lx.fillText(label, cx, cy - cH/2 - 30);
+      lx.globalAlpha = 1;
+    }
+  }
+
+  // Labels
+  lx.fillStyle = '#3a5070'; lx.font = '10px Rajdhani,sans-serif'; lx.textAlign = 'center';
+  lx.fillText('Spule', cx, cy + cH/2 + 12);
+  lx.fillText('Galvanometer', gx, gy + gr + 12);
+}
+
+window.addEventListener('load', () => { sizeLenz(); drawLenz(); });
+window.addEventListener('resize', () => { sizeLenz(); if (simReady) { resizeSim(); simDraw(simT); } });
+
+/* ─────────────────────────── RL SIMULATION ─────────────────────────── */
+const sc = document.getElementById('simCanvas');
+const sx = sc.getContext('2d');
+let simReady = false, simRunning = false, simT = 0, simAF = null;
+
+const groupPresets = [
+  { L: 0.6, R: 12, U: 24 },
+  { L: 0.9, R: 18, U: 36 },
+  { L: 0.3, R:  6, U: 12 },
+];
+
+function initSim() {
+  if (simReady) return;
+  simReady = true;
+  resizeSim();
+  simDraw(0);
+}
+
+function resizeSim() {
+  sc.width = sc.offsetWidth || 700;
+  sc.height = 230;
+}
+
+function getP() {
+  return {
+    L: +document.getElementById('lSlider').value,
+    R: +document.getElementById('rSlider').value,
+    U: +document.getElementById('uSlider').value,
+  };
+}
+
+function simUpdate() {
+  document.getElementById('lVal').textContent = (+document.getElementById('lSlider').value).toFixed(2);
+  document.getElementById('rVal').textContent = document.getElementById('rSlider').value;
+  document.getElementById('uVal').textContent = document.getElementById('uSlider').value;
+  if (!simRunning) simDraw(simT);
+}
+
+function simLoadGroup(n) {
+  const p = groupPresets[n];
+  document.getElementById('lSlider').value = p.L;
+  document.getElementById('rSlider').value = p.R;
+  document.getElementById('uSlider').value = p.U;
+  simUpdate();
+}
+
+function simToggle() {
+  if (simRunning) {
+    cancelAnimationFrame(simAF); simRunning = false;
+    document.getElementById('simBtn').textContent = '▶ Simulation starten';
+  } else {
+    simT = 0; simRunning = true;
+    document.getElementById('simBtn').textContent = '⏸ Pause';
+    simStep();
+  }
+}
+
+function simReset() {
+  cancelAnimationFrame(simAF); simRunning = false; simT = 0;
+  document.getElementById('simBtn').textContent = '▶ Simulation starten';
+  simDraw(0);
+}
+
+function simStep() {
+  const p = getP(), tau = p.L / p.R;
+  simT += tau * 0.012;
+  simDraw(simT);
+  if (simT < 5.2 * tau) simAF = requestAnimationFrame(simStep);
+  else { simRunning = false; document.getElementById('simBtn').textContent = '▶ Simulation starten'; }
+}
+
+function simDraw(tNow) {
+  const W = sc.width, H = sc.height;
+  sx.clearRect(0, 0, W, H);
+  sx.fillStyle = '#040810'; sx.fillRect(0, 0, W, H);
+
+  const p = getP(), tau = p.L / p.R, Imax = p.U / p.R;
+  const tMax = 5 * tau;
+  const PL = 58, PR = 16, PT = 32, PB = 42;
+  const pw = W - PL - PR, ph = H - PT - PB;
+
+  // Grid
+  sx.strokeStyle = '#152030'; sx.lineWidth = 1;
+  for (let i = 0; i <= 5; i++) {
+    const x = PL + i * pw / 5;
+    sx.beginPath(); sx.moveTo(x, PT); sx.lineTo(x, PT + ph); sx.stroke();
+    // x-axis label
+    sx.fillStyle = '#3a5070'; sx.font = '9px JetBrains Mono,monospace'; sx.textAlign = 'center';
+    const t = i * tMax / 5;
+    sx.fillText(t.toFixed(3)+'s', x, PT + ph + 14);
+  }
+  for (let i = 0; i <= 4; i++) {
+    const y = PT + i * ph / 4;
+    sx.beginPath(); sx.moveTo(PL, y); sx.lineTo(PL + pw, y); sx.stroke();
+  }
+
+  // Tau marker
+  const tauX = PL + (tau / tMax) * pw;
+  sx.save(); sx.strokeStyle = '#ffb300'; sx.setLineDash([4,4]); sx.lineWidth = 1;
+  sx.beginPath(); sx.moveTo(tauX, PT); sx.lineTo(tauX, PT+ph); sx.stroke();
+  sx.restore();
+  sx.fillStyle = '#ffb300'; sx.font = '10px Orbitron,monospace'; sx.textAlign = 'center';
+  sx.fillText('τ', tauX, PT - 10);
+
+  // Axes
+  sx.strokeStyle = '#253550'; sx.lineWidth = 1.5;
+  sx.beginPath(); sx.moveTo(PL, PT); sx.lineTo(PL, PT+ph+2); sx.stroke();
+  sx.beginPath(); sx.moveTo(PL-2, PT+ph); sx.lineTo(PL+pw, PT+ph); sx.stroke();
+
+  // Y labels
+  sx.fillStyle = '#3a5070'; sx.font = '9px JetBrains Mono,monospace'; sx.textAlign = 'right';
+  sx.fillText(Imax.toFixed(1)+'A', PL-4, PT+6);
+  sx.fillText((Imax*0.5).toFixed(1)+'A', PL-4, PT+ph*0.5+4);
+  sx.fillText('0', PL-4, PT+ph+4);
+
+  // X axis arrow
+  sx.fillStyle = '#3a5070'; sx.font = '10px Rajdhani,sans-serif'; sx.textAlign = 'left';
+  sx.fillText('t →', PL+pw+4, PT+ph+4);
+
+  // I(t) curve
+  sx.beginPath(); sx.strokeStyle = '#00c8ff'; sx.lineWidth = 2.5;
+  let first = true;
+  for (let i = 0; i <= 600; i++) {
+    const t = (i / 600) * tMax;
+    if (t > tNow + 0.0001) break;
+    const I = Imax * (1 - Math.exp(-t / tau));
+    const x = PL + (t / tMax) * pw;
+    const y = PT + ph - (I / Imax) * ph;
+    first ? (sx.moveTo(x, y), first=false) : sx.lineTo(x, y);
+  }
+  sx.stroke();
+
+  // U_L(t) curve (scaled to I scale via U_L/U0)
+  sx.beginPath(); sx.strokeStyle = '#ffb300'; sx.lineWidth = 2; sx.setLineDash([6,3]);
+  first = true;
+  for (let i = 0; i <= 600; i++) {
+    const t = (i / 600) * tMax;
+    if (t > tNow + 0.0001) break;
+    const UL_norm = Math.exp(-t / tau);  // scaled 0→1
+    const x = PL + (t / tMax) * pw;
+    const y = PT + ph - UL_norm * ph;
+    first ? (sx.moveTo(x, y), first=false) : sx.lineTo(x, y);
+  }
+  sx.stroke(); sx.setLineDash([]);
+
+  // Legend
+  const ly = PT + 8;
+  sx.fillStyle = '#00c8ff'; sx.fillRect(PL+12, ly, 18, 3);
+  sx.fillStyle = '#b8cce8'; sx.font = '11px Rajdhani,sans-serif'; sx.textAlign = 'left';
+  sx.fillText(`I(t)  →  Imax = ${Imax.toFixed(2)} A`, PL+36, ly+5);
+
+  sx.fillStyle = '#ffb300'; sx.fillRect(PL+12, ly+16, 18, 3);
+  sx.fillStyle = '#b8cce8';
+  sx.fillText(`U_L(t)  →  τ = ${tau.toFixed(4)} s`, PL+36, ly+21);
+
+  // Current dot
+  if (tNow > 0 && tNow <= tMax) {
+    const I_now = Imax * (1 - Math.exp(-tNow / tau));
+    const dx = PL + (tNow / tMax) * pw;
+    const dy = PT + ph - (I_now / Imax) * ph;
+    sx.beginPath(); sx.arc(dx, dy, 5, 0, Math.PI*2);
+    sx.fillStyle = '#00c8ff'; sx.fill();
+    sx.strokeStyle = '#fff'; sx.lineWidth = 1.5; sx.stroke();
+  }
+}
+</script>
+</body>
+</html>
